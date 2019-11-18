@@ -13,15 +13,17 @@ fun main(args: Array<String>) {
     server.run()
 }
 
-val clientList = mutableListOf<Server.ClientHandler>()
-var tries = 5
-//Wörter als arrays oder listen umsetzen um besser zu struktierien und auflösung von wöret einfacher zu amchen
-val word = "wasef"
-var concealedword = word.conceal()
-
 class Server(private val port: Int) {
-    fun run() {
+    private companion object {
         val scope = CoroutineScope(Job())
+        val clientList = mutableListOf<ClientHandler>()
+        var tries = 5
+        //Wörter als arrays oder listen umsetzen um besser zu struktierien und auflösung von wöret einfacher zu amchen
+        val word = "wasef"
+        var concealedword = word.conceal()
+    }
+
+    fun run() {
         var server: ServerSocket? = null
         try {
             server = ServerSocket(port)
@@ -40,11 +42,9 @@ class Server(private val port: Int) {
     }
 
     class ClientHandler(var client: Socket) {
-        private val scope = CoroutineScope(Job())
         private val reader = Scanner(client.getInputStream())
         private val writer = client.getOutputStream()
         private var running = true
-
 
         init {
             scope.launch { run() }
