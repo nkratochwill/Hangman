@@ -1,7 +1,7 @@
 package client
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.Socket
 import java.nio.charset.Charset
@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
 }
 
 class Client(address: String, port: Int) {
-    private val scope = CoroutineScope(Job())
+    private val scope = CoroutineScope(Dispatchers.Default)
     private val socket = Socket(address, port)
     private val reader: Scanner = Scanner(socket.getInputStream())
     private val writer = socket.getOutputStream()

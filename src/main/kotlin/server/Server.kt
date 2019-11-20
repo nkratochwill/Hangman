@@ -1,12 +1,14 @@
 package server
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 import java.net.ServerSocket
 import java.net.Socket
 import java.nio.charset.Charset
 import java.util.*
+import kotlin.random.Random
 
 fun main(args: Array<String>) {
     val server = Server(args[0].toInt())
@@ -15,11 +17,11 @@ fun main(args: Array<String>) {
 
 class Server(private val port: Int) {
     private companion object {
-        val scope = CoroutineScope(Job())
+        val scope = CoroutineScope(Dispatchers.Default)
         val clientList = mutableListOf<ClientHandler>()
-        var tries = 5
+        var tries = 0
         //Wörter als arrays oder listen umsetzen um besser zu struktierien und auflösung von wöret einfacher zu amchen
-        val word = "wasef"
+        var word = newWord()
         var concealedword = word.conceal()
     }
 
@@ -59,10 +61,10 @@ class Server(private val port: Int) {
                 val message = reader.nextLine()
                 //TODO else umschreiben, da wenn client mittem im spiel dc schickt er nur leerzeichen und das sorgt wegen while schleife für dauer output von else
                 when {
-                    tries == 0 -> {
+                    tries == 10 -> {
                         writeToAll("You lose. The word was $word")
                         //word = newWord()
-                        tries = 5
+                        tries = 0
                     }
                     message == "exit" -> {
                         shutdown()
@@ -74,10 +76,12 @@ class Server(private val port: Int) {
                     }
                     message == word -> {
                         writeToAll("Du hast gewonnen euda, das Wort war $word")
-                        //word = newWord()
-                        tries = 5
+                        word = newWord()
+                        loadhighscorelist(tries)
+                        tries = 10
+
                     }
-                    else -> writeToAll("${String(concealedword)} and ${--tries} tries left")
+                    else -> writeToAll("${String(concealedword)} and ${++tries} tries")
 
                 }
             }
@@ -96,19 +100,19 @@ class Server(private val port: Int) {
             }
         }
 
-
-        private fun String.unconceal(word: CharArray, letter: Char): CharArray {
-            val copyOfSolution = this.toCharArray()
-            for (i in this.indices) {
-                if (word[i] == '.' && this[i] != letter) {
-                    copyOfSolution[i] = '.'
-                }
+        fun loadhighscorelist(tries: Int = 0) {
+            val highscore = mutableListOf<String>()
+            val f = File("src/main/resources/highscore.txt")
+            if (tries != 0) {
+                f.appendText(tries.toString() + "\n")
+                f.forEachLine { highscore.add(it) }
+                highscore.sort()
+            } else {
+                f.forEachLine { highscore.add(it) }
             }
-            return copyOfSolution
-        }
-
-        private fun newWord(): CharArray {
-            TODO("Implement file access and random word selection from file")
+            var output = ""
+            highscore.forEachIndexed { i, s -> output += "${i.inc()}. $s Versuche\n" }
+            writeToAll(output)
         }
 
         private fun shutdown() {
@@ -118,13 +122,31 @@ class Server(private val port: Int) {
             println("${client.remoteSocketAddress} disconnected")
             client.close()
         }
+
     }
+}
+
+private fun newWord(): String {
+    val wordlist: List<String>
+    val f = File("src/main/resources/words.txt")
+    wordlist = f.readLines()
+    return wordlist[Random.nextInt(0, wordlist.size)]
 }
 
 private fun String.conceal(): CharArray {
     val copyOfSolution = this.toCharArray()
     for (i in this.indices) {
         copyOfSolution[i] = '.'
+    }
+    return copyOfSolution
+}
+
+private fun String.unconceal(word: CharArray, letter: Char): CharArray {
+    val copyOfSolution = this.toCharArray()
+    for (i in this.indices) {
+        if (word[i] == '.' && this[i] != letter) {
+            copyOfSolution[i] = '.'
+        }
     }
     return copyOfSolution
 }

@@ -1,3 +1,8 @@
 hallo
 wasef
 tschüss
+frucht
+laptop
+kotlin
+maus
+katze
