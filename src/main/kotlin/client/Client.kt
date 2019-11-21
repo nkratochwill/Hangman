@@ -12,6 +12,11 @@ fun main(args: Array<String>) {
     client.run()
 }
 
+/**
+ * The client class
+ * @param address the address the client will connect to
+ * @param port the port that will be used to connect to the server
+ */
 class Client(address: String, port: Int) {
     private val scope = CoroutineScope(Dispatchers.Default)
     private val socket = Socket(address, port)
@@ -33,12 +38,19 @@ class Client(address: String, port: Int) {
         }
     }
 
+    /**
+     * Reads received messages
+     */
     private fun read() {
         while (connected && reader.hasNextLine()) {
             println("Server: ${reader.nextLine()}")
         }
     }
 
+    /**
+     * Sends a message to the current client
+     * @param message the message that will be send
+     */
     private fun write(message: String) {
         writer.write("$message\n".toByteArray(Charset.defaultCharset()))
         writer.flush()
