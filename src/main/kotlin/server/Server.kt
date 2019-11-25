@@ -24,7 +24,6 @@ class Server(private val port: Int) {
         val scope = CoroutineScope(Dispatchers.Default)
         val clientList = mutableListOf<ClientHandler>()
         var tries = 0
-        //Wörter als arrays oder listen umsetzen um besser zu struktierien und auflösung von wöret einfacher zu amchen
         var word = newWord()
         var concealedword = word.conceal()
     }
@@ -133,7 +132,7 @@ class Server(private val port: Int) {
                 f.forEachLine { highscore.add(it) }
             }
             var output = ""
-            highscore.forEachIndexed { i, s -> output += "${i.inc()}. $s Versuche\n" }
+            highscore.forEachIndexed { i, s -> output += "${i.inc()}.Platz hat $s Versuche\n" }
             writeToAll(output)
 
         }

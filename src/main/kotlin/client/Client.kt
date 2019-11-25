@@ -20,7 +20,7 @@ fun main(args: Array<String>) {
 class Client(address: String, port: Int) {
     private val scope = CoroutineScope(Dispatchers.Default)
     private val socket = Socket(address, port)
-    private val reader: Scanner = Scanner(socket.getInputStream())
+    private val reader = Scanner(socket.getInputStream())
     private val writer = socket.getOutputStream()
     private var connected = true
 

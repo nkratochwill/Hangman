@@ -41,7 +41,7 @@ Erstelle ein Hangman-Spiel, wobei der Server als Spiele-Host fungiert!
 - [x] Der Client verbindet sich mit dem Server, wobei IP-Adresse und Port ebenfalls über Kommandozeilenparameter konfiguriert werden können
 - [x] Anschließend schickt der Client alle Benutzereingaben an den Server und gibt dessen Antwort in der Konsole aus
 - [x] Alle Verbindungen werden sauber geschlossen
-- [ ] JavaDoc-Kommentare sind vorhanden
+- [x] JavaDoc-Kommentare sind vorhanden
 - [ ] Server und Client sind als separate ausführbare .jar-Files inkl. Source-Code vorhanden
 Viel Erfolg!
 
